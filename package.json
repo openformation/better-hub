@@ -22,8 +22,8 @@
 	"type": "module",
 	"scripts": {
 		"go": "bun run",
-		"build": "bun -r run build",
-		"dev": "bun -r run dev",
+		"build": "bun run --workspaces build",
+		"dev": "bun run --workspaces dev",
 		"lint": "oxlint apps packages",
 		"lint:fix": "oxlint --fix apps packages",
 		"fmt": "oxfmt --ignore-path .oxfmtignore apps packages *.json *.yaml",
