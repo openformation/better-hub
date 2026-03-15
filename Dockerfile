@@ -1,0 +1,55 @@
+# ── Stage 1: Install dependencies ─────────────────────────────────
+FROM oven/bun:1 AS deps
+
+WORKDIR /app
+
+COPY package.json bun.lock bunfig.toml ./
+COPY apps/web/package.json apps/web/
+
+RUN bun install --frozen-lockfile
+
+# ── Stage 2: Build the Next.js app ───────────────────────────────
+FROM oven/bun:1 AS builder
+
+WORKDIR /app
+
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+
+# Generate Prisma client and build
+WORKDIR /app/apps/web
+RUN bunx prisma generate
+RUN bun run build
+
+WORKDIR /app
+
+# ── Stage 3: Production runner ───────────────────────────────────
+FROM oven/bun:1-slim AS runner
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV HOSTNAME="0.0.0.0"
+ENV PORT=3000
+
+# Copy standalone Next.js output (includes server + minimal node_modules)
+COPY --from=builder /app/apps/web/.next/standalone ./
+COPY --from=builder /app/apps/web/.next/static ./apps/web/.next/static
+COPY --from=builder /app/apps/web/public ./apps/web/public
+
+# Copy Prisma schema + migrations for runtime migrate
+COPY --from=builder /app/apps/web/prisma ./apps/web/prisma
+
+# Copy generated Prisma client
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
+COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
+
+# Copy entrypoint script
+COPY docker-entrypoint.sh /app/docker-entrypoint.sh
+RUN chmod +x /app/docker-entrypoint.sh
+
+EXPOSE 3000
+
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
+CMD ["bun", "apps/web/server.js"]

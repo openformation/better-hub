@@ -26,6 +26,7 @@ const KNOWN_ROUTES = [
 ];
 
 const nextConfig: NextConfig = {
+	output: "standalone",
 	devIndicators: false,
 	serverExternalPackages: ["@prisma/client"],
 	experimental: {
