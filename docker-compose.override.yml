@@ -1,0 +1,25 @@
+# Override file for self-hosted deployment.
+# Docker Compose merges this automatically with docker-compose.yml,
+# keeping the base file untouched for clean upstream syncs.
+services:
+        app:
+                build:
+                        context: .
+                        dockerfile: Dockerfile
+                container_name: better-hub-app
+                restart: unless-stopped
+                ports:
+                        - "3000:3000"
+                env_file: ./apps/web/.env
+                depends_on:
+                        postgres:
+                                condition: service_healthy
+                        redis-rest:
+                                condition: service_started
+
+        postgres:
+                healthcheck:
+                        test: ["CMD-SHELL", "pg_isready -U postgres"]
+                        interval: 5s
+                        timeout: 5s
+                        retries: 5
