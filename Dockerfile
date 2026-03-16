@@ -48,9 +48,13 @@ COPY --from=builder /app/apps/web/prisma ./apps/web/prisma
 # Copy generated Prisma client (custom output: apps/web/src/generated/prisma)
 COPY --from=builder /app/apps/web/src/generated/prisma ./apps/web/src/generated/prisma
 
-# Copy Prisma CLI + engine for runtime migrations (prisma migrate deploy)
+# Copy Prisma CLI + deps for runtime migrations (prisma migrate deploy)
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
+COPY --from=builder /app/node_modules/effect ./node_modules/effect
+
+# Copy Docker-specific Prisma config (no dotenv — env vars come from docker-compose)
+COPY prisma.docker.config.ts /app/prisma.config.ts
 
 # Copy entrypoint script
 COPY docker-entrypoint.sh /app/docker-entrypoint.sh
