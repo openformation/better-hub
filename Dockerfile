@@ -42,9 +42,8 @@ COPY --from=builder /app/apps/web/.next/standalone ./
 COPY --from=builder /app/apps/web/.next/static ./apps/web/.next/static
 COPY --from=builder /app/apps/web/public ./apps/web/public
 
-# Copy Prisma schema, config + migrations for runtime migrate
+# Copy Prisma schema + migrations for runtime migrate deploy
 COPY --from=builder /app/apps/web/prisma ./apps/web/prisma
-COPY --from=builder /app/apps/web/prisma.config.ts ./apps/web/prisma.config.ts
 
 # Copy generated Prisma client (custom output: apps/web/src/generated/prisma)
 COPY --from=builder /app/apps/web/src/generated/prisma ./apps/web/src/generated/prisma
@@ -52,7 +51,6 @@ COPY --from=builder /app/apps/web/src/generated/prisma ./apps/web/src/generated/
 # Copy Prisma CLI + engine for runtime migrations (prisma migrate deploy)
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
-COPY --from=builder /app/node_modules/dotenv ./node_modules/dotenv
 
 # Copy entrypoint script
 COPY docker-entrypoint.sh /app/docker-entrypoint.sh
