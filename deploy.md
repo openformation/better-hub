@@ -44,7 +44,7 @@ This starts:
 - **redis** + **redis-rest** — Redis with HTTP REST API (Upstash-compatible)
 - **app** — Better Hub Next.js application
 
-On first boot, Prisma migrations run automatically before the app starts.
+On first boot, `prisma db push` syncs the database schema before the app starts.
 
 ## 4. Open the app
 
@@ -58,7 +58,7 @@ The Docker setup uses `docker-compose.override.yml` to add the `app` service on 
 docker-compose.yml            ← upstream (postgres, redis, redis-rest)
 docker-compose.override.yml   ← self-hosted additions (app service, healthchecks)
 Dockerfile                    ← multi-stage build (deps → build → slim runner)
-docker-entrypoint.sh          ← runs prisma migrate deploy on boot
+docker-entrypoint.sh          ← runs prisma db push on boot
 apps/web/.env.docker           ← env template for Docker networking
 ```
 
@@ -70,7 +70,7 @@ After pulling new changes:
 docker compose up --build
 ```
 
-Migrations run automatically on each boot, so schema changes are applied without extra steps.
+The database schema is synced automatically on each boot via `prisma db push`, so schema changes are applied without extra steps.
 
 ## Stopping
 
