@@ -52,6 +52,7 @@ COPY --from=builder /app/apps/web/src/generated/prisma ./apps/web/src/generated/
 # Copy Prisma CLI + engine for runtime migrations (prisma migrate deploy)
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
+COPY --from=builder /app/node_modules/dotenv ./node_modules/dotenv
 
 # Copy entrypoint script
 COPY docker-entrypoint.sh /app/docker-entrypoint.sh
