@@ -48,13 +48,13 @@ COPY --from=builder /app/apps/web/prisma ./apps/web/prisma
 # Copy generated Prisma client (custom output: apps/web/src/generated/prisma)
 COPY --from=builder /app/apps/web/src/generated/prisma ./apps/web/src/generated/prisma
 
-# Copy Prisma CLI + deps for runtime migrations (prisma migrate deploy)
-COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
-COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
-COPY --from=builder /app/node_modules/effect ./node_modules/effect
-
-# Copy Docker-specific Prisma config (no dotenv — env vars come from docker-compose)
+# Install Prisma CLI with full dependency tree for runtime migrations.
+# Installed to /prisma-cli to avoid conflicts with standalone Next.js output.
 COPY prisma.docker.config.ts /app/prisma.config.ts
+RUN mkdir /prisma-cli && cd /prisma-cli \
+    && echo '{"dependencies":{"prisma":"^7.4.1"}}' > package.json \
+    && bun install \
+    && rm -f bun.lock
 
 # Copy entrypoint script
 COPY docker-entrypoint.sh /app/docker-entrypoint.sh
