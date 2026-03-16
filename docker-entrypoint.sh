@@ -6,7 +6,7 @@ set -e
 # Prisma CLI installed at /prisma-cli to avoid conflicts with standalone output
 echo "Running database migrations..."
 cd /app
-/prisma-cli/node_modules/.bin/prisma migrate deploy
+NODE_PATH=/prisma-cli/node_modules /prisma-cli/node_modules/.bin/prisma migrate deploy
 
 echo "Starting application..."
 exec "$@"
