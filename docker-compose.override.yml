@@ -22,7 +22,7 @@ services:
                 container_name: better-hub-pgbouncer
                 restart: unless-stopped
                 ports:
-                        - "5433:5432"
+                        - "127.0.0.1:5433:5432"
                 environment:
                         - POSTGRESQL_HOST=postgres
                         - POSTGRESQL_PORT=5432
