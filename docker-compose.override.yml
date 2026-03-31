@@ -1,0 +1,56 @@
+# Override file for self-hosted deployment.
+# Docker Compose merges this automatically with docker-compose.yml,
+# keeping the base file untouched for clean upstream syncs.
+services:
+        app:
+                build:
+                        context: .
+                        dockerfile: Dockerfile
+                container_name: better-hub-app
+                restart: unless-stopped
+                ports:
+                        - "3000:3000"
+                env_file: ./apps/web/.env
+                depends_on:
+                        pgbouncer:
+                                condition: service_healthy
+                        redis-rest:
+                                condition: service_started
+
+        pgbouncer:
+                image: public.ecr.aws/bitnami/pgbouncer:latest
+                container_name: better-hub-pgbouncer
+                restart: unless-stopped
+                environment:
+                        - POSTGRESQL_HOST=postgres
+                        - POSTGRESQL_PORT=5432
+                        - POSTGRESQL_DATABASE_NAME=better_hub
+                        - POSTGRESQL_USERNAME=postgres
+                        - POSTGRESQL_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+                        - PGBOUNCER_DEFAULT_POOL_SIZE=30
+                        - PGBOUNCER_MIN_POOL_SIZE=10
+                        - PGBOUNCER_RESERVE_POOL_SIZE=5
+                        - PGBOUNCER_MAX_CLIENT_CONNECTIONS=100
+                        - PGBOUNCER_POOL_MODE=transaction
+                healthcheck:
+                        test: ["CMD-SHELL", "bash -c '(echo > /dev/tcp/localhost/6432) 2>/dev/null || exit 1'"]
+                        interval: 10s
+                        timeout: 5s
+                        retries: 10
+
+        postgres:
+                healthcheck:
+                        test: ["CMD-SHELL", "pg_isready -U postgres"]
+                        interval: 5s
+                        timeout: 5s
+                        retries: 5
+                command: >
+                        postgres
+                        -c max_connections=300
+                        -c shared_buffers=256MB
+                        -c effective_cache_size=512MB
+                        -c work_mem=16MB
+                        -c maintenance_work_mem=128MB
+                        -c random_page_cost=1.1
+                        -c synchronous_commit=off
+                        -c full_page_writes=off

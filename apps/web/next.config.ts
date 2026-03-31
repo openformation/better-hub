@@ -26,12 +26,13 @@ const KNOWN_ROUTES = [
 ];
 
 const nextConfig: NextConfig = {
+	output: "standalone",
 	devIndicators: false,
 	serverExternalPackages: ["@prisma/client"],
 	experimental: {
 		staleTimes: {
-			dynamic: 300,
-			static: 180,
+			dynamic: 600,
+			static: 600,
 		},
 		// serverComponentsHmrCache: true,
 		imgOptTimeoutInSeconds: 3,
