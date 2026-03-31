@@ -18,22 +18,17 @@ services:
                                 condition: service_started
 
         pgbouncer:
-                image: edoburu/pgbouncer:latest
+                image: bitnami/pgbouncer:latest
                 container_name: better-hub-pgbouncer
                 restart: unless-stopped
                 ports:
                         - "5433:5432"
                 environment:
-                        - POSTGRES_HOST=postgres
-                        - POSTGRES_PORT=5432
-                        - POSTGRES_DATABASE=better_hub
-                        - POSTGRES_USER=postgres
-                        - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
-                        - POOL_MODE=transaction
-                        - MAX_CLIENT_CONN=100
-                        - DEFAULT_POOL_SIZE=20
-                        - RESERVE_POOL_SIZE=5
-                        - RESERVE_POOL_TIMEOUT=5
+                        - POSTGRESQL_HOST=postgres
+                        - POSTGRESQL_PORT=5432
+                        - POSTGRESQL_DATABASE_NAME=better_hub
+                        - POSTGRESQL_USERNAME=postgres
+                        - POSTGRESQL_PASSWORD=${POSTGRES_PASSWORD:-postgres}
                 healthcheck:
                         test: ["CMD-SHELL", "pg_isready -h localhost -p 5432 -U postgres"]
                         interval: 5s
