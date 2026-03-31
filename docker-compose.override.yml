@@ -18,7 +18,7 @@ services:
                                 condition: service_started
 
         pgbouncer:
-                image: bitnami/pgbouncer:latest
+                image: public.ecr.aws/bitnami/pgbouncer:latest
                 container_name: better-hub-pgbouncer
                 restart: unless-stopped
                 ports:
