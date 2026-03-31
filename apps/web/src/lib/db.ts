@@ -24,6 +24,12 @@ function getOrCreatePool(): Pool {
 		allowExitOnIdle: true,
 	});
 
+	// Enable prepared statement caching for better query performance
+	pool.on("connect", (client) => {
+		client.query("SET statement_timeout = '30s'");
+		client.query("SET lock_timeout = '10s'");
+	});
+
 	_proc.__dbPool = pool;
 	attachDatabasePool(pool);
 	return pool;

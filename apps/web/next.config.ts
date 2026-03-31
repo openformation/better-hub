@@ -31,8 +31,8 @@ const nextConfig: NextConfig = {
 	serverExternalPackages: ["@prisma/client"],
 	experimental: {
 		staleTimes: {
-			dynamic: 300,
-			static: 180,
+			dynamic: 600,
+			static: 600,
 		},
 		// serverComponentsHmrCache: true,
 		imgOptTimeoutInSeconds: 3,
