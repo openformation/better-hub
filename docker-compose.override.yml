@@ -21,8 +21,6 @@ services:
                 image: public.ecr.aws/bitnami/pgbouncer:latest
                 container_name: better-hub-pgbouncer
                 restart: unless-stopped
-                ports:
-                        - "127.0.0.1:5433:6432"
                 environment:
                         - POSTGRESQL_HOST=postgres
                         - POSTGRESQL_PORT=5432
@@ -30,7 +28,7 @@ services:
                         - POSTGRESQL_USERNAME=postgres
                         - POSTGRESQL_PASSWORD=${POSTGRES_PASSWORD:-postgres}
                 healthcheck:
-                        test: ["CMD-SHELL", "nc -z localhost 6432 || exit 1"]
+                        test: ["CMD-SHELL", "bash -c '(echo > /dev/tcp/localhost/6432) 2>/dev/null || exit 1'"]
                         interval: 10s
                         timeout: 5s
                         retries: 10
